@@ -1,4 +1,4 @@
-const fs = require("fs");
+const fsPromises = require("fs").promises;
 const path = require("path");
 
 // fs.readFile("files/starter.txt", "utf8", (err, data) => {
@@ -21,15 +21,15 @@ process.on("uncaughtExeption", (err) => {
 
 //instead of hardoding the path "files/starter.txt" there is a better way.
 
-fs.readFile(
-  path.join(__dirname, "files", "starter.txt"),
-  "utf8",
-  (err, data) => {
-    if (err) throw err;
+// fs.readFile(
+//   path.join(__dirname, "files", "starter.txt"),
+//   "utf8",
+//   (err, data) => {
+//     if (err) throw err;
 
-    console.log(data);
-  }
-);
+//     console.log(data);
+//   }
+// );
 
 //WRITE FILE and fighting with asynchronicity
 
@@ -59,5 +59,38 @@ fs.readFile(
 //   }
 // );
 
+const fileOps = async () => {
+  try {
+    const data = await fsPromises.readFile(
+      path.join(__dirname, "files", "starter.txt"),
+      "utf8"
+    );
+    console.log(data);
 
+    await fsPromises.unlink(path.join(__dirname, "files", "promiseWrite.txt"));
 
+    await fsPromises.writeFile(
+      path.join(__dirname, "files", "PromiseWrite.txt"),
+      data
+    );
+
+    await fsPromises.appendFile(
+      path.join(__dirname, "files", "PromiseWrite.txt"),
+      "Balls"
+    );
+
+    await fsPromises.rename(
+      path.join(__dirname, "files", "PromiseWrite.txt"),
+      "promiseComplete.txt"
+    );
+    const newData = await fsPromises.readFile(
+      path.join(__dirname, "files", "promiseComplete.txt"),
+      "utf8"
+    );
+    console.log(newData);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+fileOps();
